@@ -1,0 +1,19 @@
+FROM node:latest
+
+WORKDIR /app
+
+COPY package*.json ./
+
+COPY . .
+
+RUN npm install
+
+# Build the server
+RUN npm run build
+
+# Return to the main directory
+WORKDIR /app
+
+EXPOSE 5001
+
+CMD ["npm", "run", "server"]

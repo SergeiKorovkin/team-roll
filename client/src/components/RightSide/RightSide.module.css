@@ -1,0 +1,15 @@
+.mainWrap {
+	width: 400px;
+}
+
+@media (max-width: 1250px) {
+	.mainWrap {
+		width: 30vw;
+	}
+}
+
+@media (max-width: 1250px) {
+	.text {
+		font-size: 2.3vw;
+	}
+}

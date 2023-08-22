@@ -1,0 +1,45 @@
+version: '3.8'
+services:
+  team-roll-client:
+    user: root
+    container_name: team-roll-client-dev
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app/client
+      - /app/client/node_modules
+  team-roll-dev:
+    user: root
+    container_name: team-roll-server-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5001:5001"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ~/docker-certs:/etc/letsencrypt/live/lmru-returns.ru:ro
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb://mongo:27017/team-roll-mongo-dev
+    depends_on:
+      - mongo
+
+  mongo:
+    container_name: team-roll-mongo-dev
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
+
+
+
+
