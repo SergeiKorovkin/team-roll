@@ -1,8 +1,9 @@
 version: '3.8'
 services:
-  team-roll:
+  server:
     user: root
     container_name: team-roll-server
+    image: team-roll-server:latest
     build:
       context: .
       dockerfile: Dockerfile.prod
@@ -13,21 +14,5 @@ services:
       - ~/docker-certs:/etc/letsencrypt/live/lmru-returns.ru:ro
     environment:
       - NODE_ENV=production
-      - MONGO_URI=mongodb://mongo:27017/team-roll-mongo
-    depends_on:
-      - mongo
-
-  mongo:
-    container_name: team-roll-mongo
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-
-volumes:
-  mongodb_data:
-
-
 
 

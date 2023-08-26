@@ -1,8 +1,9 @@
 version: '3.8'
 services:
-  team-roll-client:
+  client:
     user: root
     container_name: team-roll-client-dev
+    image: team-roll-client-dev:latest
     build:
       context: ./client
       dockerfile: Dockerfile
@@ -11,9 +12,10 @@ services:
     volumes:
       - ./client:/app/client
       - /app/client/node_modules
-  team-roll-dev:
+  server:
     user: root
     container_name: team-roll-server-dev
+    image: team-roll-server-dev:latest
     build:
       context: .
       dockerfile: Dockerfile.dev
