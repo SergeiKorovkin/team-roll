@@ -43,7 +43,7 @@ async function start() {
 				console.log(`HTTPS server started on port ${PORT}...`)
 			})
 		} else {
-			app.listen(PORT, () => console.log(`App has been started on port ${PORT}...`))
+			app.listen(PORT, () => console.log(`App has been started on port  ${PORT}...`))
 		}
 	} catch (e: any) {
 		console.log('Server error: ', e.message)
