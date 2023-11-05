@@ -2,6 +2,7 @@ team-roll application to decide who will be on the dailies as a presenter. An ap
 
 
 ## install
+
 > npm i
 
 > cd client && npm i
@@ -12,3 +13,4 @@ team-roll application to decide who will be on the dailies as a presenter. An ap
 before need install docker
 
 > npm run dev
+
