@@ -24,6 +24,18 @@ app.use('/api/user', user)
 app.use('/api/auth', auth)
 app.use('/api/bets', bets)
 
+// Настройте express для обслуживания файлов из .well-known/acme-challenge для https
+app.use('/.well-known/acme-challenge', express.static(path.join(__dirname, '.well-known', 'acme-challenge')))
+
+if (isProd) {
+	app.use('/', express.static(path.join(__dirname, '..', 'client', 'build')))
+
+	app.get('*', (req, res) => {
+		res.sendFile(path.resolve(__dirname, '..', 'client', 'build', 'index.html'))
+	})
+}
+
+console.log('process.env.NODE_ENV', process.env.NODE_ENV)
 if (isProd) {
 	app.use('/', express.static(path.join(__dirname, '..', 'client', 'build')))
 
