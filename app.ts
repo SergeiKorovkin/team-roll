@@ -42,7 +42,7 @@ if (isProd) {
 	})
 }
 
-const PORT = http ? 8080 : config.get('port') || 5005
+const PORT = http ? 80 : config.get('port') || 5005
 
 async function start() {
 	try {
