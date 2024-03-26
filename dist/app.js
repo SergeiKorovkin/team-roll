@@ -37,7 +37,7 @@ if (isProd) {
         res.sendFile(path_1.default.resolve(__dirname, '..', 'client', 'build', 'index.html'));
     });
 }
-const PORT = config_1.default.get('port') || 5005;
+const PORT = http ? 8080 : config_1.default.get('port') || 5005;
 async function start() {
     try {
         await mongoose.connect(config_1.default.get('mongoURL'));
