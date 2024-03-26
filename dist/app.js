@@ -13,10 +13,17 @@ const bets_routes_1 = __importDefault(require("./src/routes/bets.routes"));
 const path_1 = __importDefault(require("path"));
 const mongoose = require('mongoose');
 const app = (0, express_1.default)();
-const httpsOptions = {
-    key: fs_1.default.readFileSync('/etc/letsencrypt/live/lmru-returns.ru/privkey.pem'),
-    cert: fs_1.default.readFileSync('/etc/letsencrypt/live/lmru-returns.ru/fullchain.pem'),
-};
+let http = false;
+let httpsOptions = {};
+try {
+    httpsOptions = {
+        key: fs_1.default.readFileSync('/etc/letsencrypt/live/lmru-returns.ru/privkey.pem'),
+        cert: fs_1.default.readFileSync('/etc/letsencrypt/live/lmru-returns.ru/fullchain.pem'),
+    };
+}
+catch (e) {
+    http = true;
+}
 const isProd = process.env.NODE_ENV === 'production';
 app.use(express_1.default.json({ limit: '3mb' }));
 app.use('/api/user', user_routes_1.default);
@@ -30,21 +37,19 @@ if (isProd) {
         res.sendFile(path_1.default.resolve(__dirname, '..', 'client', 'build', 'index.html'));
     });
 }
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
-if (isProd) {
-    app.use('/', express_1.default.static(path_1.default.join(__dirname, '..', 'client', 'build')));
-    app.get('*', (req, res) => {
-        res.sendFile(path_1.default.resolve(__dirname, '..', 'client', 'build', 'index.html'));
-    });
-}
 const PORT = config_1.default.get('port') || 5005;
 async function start() {
     try {
         await mongoose.connect(config_1.default.get('mongoURL'));
         if (isProd) {
-            https_1.default.createServer(httpsOptions, app).listen(PORT, () => {
-                console.log(`HTTPS server started on port ${PORT}...`);
-            });
+            if (http) {
+                app.listen(PORT, () => console.log(`App has been started on port  ${PORT}...`));
+            }
+            else {
+                https_1.default.createServer(httpsOptions, app).listen(PORT, () => {
+                    console.log(`HTTPS server started on port ${PORT}...`);
+                });
+            }
         }
         else {
             app.listen(PORT, () => console.log(`App has been started on port  ${PORT}...`));

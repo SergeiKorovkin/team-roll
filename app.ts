@@ -12,9 +12,16 @@ const mongoose = require('mongoose')
 
 const app = express()
 
-const httpsOptions = {
-	key: fs.readFileSync('/etc/letsencrypt/live/lmru-returns.ru/privkey.pem'),
-	cert: fs.readFileSync('/etc/letsencrypt/live/lmru-returns.ru/fullchain.pem'),
+let http = false
+
+let httpsOptions = {}
+try {
+	httpsOptions = {
+		key: fs.readFileSync('/etc/letsencrypt/live/lmru-returns.ru/privkey.pem'),
+		cert: fs.readFileSync('/etc/letsencrypt/live/lmru-returns.ru/fullchain.pem'),
+	}
+} catch (e) {
+	http = true
 }
 
 const isProd = process.env.NODE_ENV === 'production'
@@ -35,25 +42,19 @@ if (isProd) {
 	})
 }
 
-console.log('process.env.NODE_ENV', process.env.NODE_ENV)
-if (isProd) {
-	app.use('/', express.static(path.join(__dirname, '..', 'client', 'build')))
-
-	app.get('*', (req, res) => {
-		res.sendFile(path.resolve(__dirname, '..', 'client', 'build', 'index.html'))
-	})
-}
-
 const PORT = config.get('port') || 5005
 
 async function start() {
 	try {
 		await mongoose.connect(config.get('mongoURL'))
-
 		if (isProd) {
-			https.createServer(httpsOptions, app).listen(PORT, () => {
-				console.log(`HTTPS server started on port ${PORT}...`)
-			})
+			if (http) {
+				app.listen(PORT, () => console.log(`App has been started on port  ${PORT}...`))
+			} else {
+				https.createServer(httpsOptions, app).listen(PORT, () => {
+					console.log(`HTTPS server started on port ${PORT}...`)
+				})
+			}
 		} else {
 			app.listen(PORT, () => console.log(`App has been started on port  ${PORT}...`))
 		}
