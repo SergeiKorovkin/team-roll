@@ -69,21 +69,24 @@ router.post('/bet', [auth, check('coins', 'Нет поля coins').exists()], as
 // удалить ставку
 router.delete('/bet/:id', [auth], async (req: any, res: any) => {
 	try {
-		const { name } = req.user
 		const { id } = req.params
 
-		const user = await User.findOne({ name }).select('-password -email -__v -role')
+		const bet = await Bet.findById(id)
+
+		if (!bet) return res.status(404).json({ message: 'Ставка не найдена' })
+
+		const user = await User.findOne({ name: bet.name }).select('-password -email -__v -role')
 
 		if (!user) return res.status(404).json({ message: 'Пользователь не найден' })
-		const bet = await Bet.findById(id)
-		if (!bet) return res.status(404).json({ message: 'Ставка не найдена' })
+
 		if (bet.win) return res.status(400).json({ message: 'Ставка закрыта' })
+
 		await Bet.findByIdAndDelete(id)
+
 		user.coins = user.coins + bet.coins
 
 		await user.save()
 
-		console.log('hello')
 		res.status(204).json(null)
 	} catch (e) {
 		console.log('e', e)

@@ -9,13 +9,13 @@ import { useCloseBet } from '../../hooks/api/useCloseBet'
 import { Wheel } from 'react-custom-roulette'
 
 const Roll = () => {
-	const { user } = useAuthContext()
+	const { user, startRoll, setStartRoll } = useAuthContext()
+
 	const { response: users } = useGetAllUsers()
 	const usersPlay = users.filter(({ playInGame }: any) => playInGame)
 	const { randomNumber, rerollNumber } = useGenerateNumber(usersPlay.length - 1)
 	const { closeBet } = useCloseBet()
 	const { role } = user
-	const [startRoll, setStartRoll] = useState(false)
 	const [openModal, setOpenModal] = useState(false)
 
 	return (
