@@ -19,7 +19,9 @@ export const useGetHistoryBets = (): IUseGetUsers => {
 		isFetching,
 		isError,
 		error,
-	} = useQuery<any, Error>([USE_GET_ALL_BETS_QUERY_KEY], () => apiConnector(endpoints.historyBets))
+	} = useQuery<any, Error>([USE_GET_ALL_BETS_QUERY_KEY], () => apiConnector(endpoints.historyBets), {
+		refetchInterval: 2000,
+	})
 
 	return {
 		response: data,

@@ -1,6 +1,6 @@
 {
 	"port": 5001,
 	"jwtSecret": "team-roll",
-	"mongoURL": "mongodb+srv://kosergey:g4NeGwR6dPFZmeSV@cluster0.fvya7ph.mongodb.net/?retryWrites=true&w=majority",
+	"mongoURL": "mongodb+srv://kosergey:vPCEnpSH6rWaXjz3@cluster0.grotbxm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
 	"baseUrl": "http://localhost:5001"
 }

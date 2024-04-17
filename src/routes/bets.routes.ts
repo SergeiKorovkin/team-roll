@@ -20,7 +20,7 @@ router.get('/history', auth, async (req: any, res: any) => {
 })
 
 // добавить новую ставку
-router.post('/add', [auth, check('coins', 'Нет поля coins').exists()], async (req: any, res: any) => {
+router.post('/bet', [auth, check('coins', 'Нет поля coins').exists()], async (req: any, res: any) => {
 	try {
 		const { coins, usersBet } = req.body
 		const { name } = req.user
@@ -66,7 +66,35 @@ router.post('/add', [auth, check('coins', 'Нет поля coins').exists()], as
 	}
 })
 
-// добавить новую ставку
+// удалить ставку
+router.delete('/bet/:id', [auth], async (req: any, res: any) => {
+	try {
+		const { id } = req.params
+
+		const bet = await Bet.findById(id)
+
+		if (!bet) return res.status(404).json({ message: 'Ставка не найдена' })
+
+		const user = await User.findOne({ name: bet.name }).select('-password -email -__v -role')
+
+		if (!user) return res.status(404).json({ message: 'Пользователь не найден' })
+
+		if (bet.win) return res.status(400).json({ message: 'Ставка закрыта' })
+
+		await Bet.findByIdAndDelete(id)
+
+		user.coins = user.coins + bet.coins
+
+		await user.save()
+
+		res.status(204).json(null)
+	} catch (e) {
+		console.log('e', e)
+		res.status(500).json({ message: 'Что-то пошло не так, попробуй снова' })
+	}
+})
+
+// Выбрать победителя
 router.post('/close', [auth, check('winUser', 'Нет поля winUser').exists()], async (req: any, res: any) => {
 	try {
 		const { winUser } = req.body
@@ -74,9 +102,16 @@ router.post('/close', [auth, check('winUser', 'Нет поля winUser').exists(
 
 		if (role !== 'ADMIN') return res.status(403).json({ message: 'Нет доступа' })
 
-		const users = await User.find({ playInGame: true }).select('-password -email -__v -role')
+		const users = await User.find().select('-password -email -__v -role')
 
 		if (!users) return res.status(404).json({ message: 'Пользователи не найдены' })
+
+		const allBets = await Bet.find({ win: null })
+
+		const uniqueUsernamesFromBets = [...new Set(allBets.map((bet) => bet.name))]
+
+		// Identify users who did not create any bets
+		const usersWithoutBets = users.filter((user) => !uniqueUsernamesFromBets.includes(user.name))
 
 		// Find all Bets where winUser exists in the betNames array and win is null
 		const betsToUpdate = await Bet.find({ betNames: winUser, win: null })
@@ -89,9 +124,21 @@ router.post('/close', [auth, check('winUser', 'Нет поля winUser').exists(
 		await User.updateOne({ name: winUser }, { $set: { playInGame: false } })
 
 		for (let bet of betsToUpdate) {
-			let coinsToAdd = bet.betNames.length > 1 ? bet.coins * 2 : bet.coins * users.length
+			let coinsToAdd =
+				bet.betNames.length > 1 ? bet.coins * 2 : bet.coins * users.filter((user) => user.playInGame).length
 			await User.updateOne({ name: bet.name }, { $inc: { coins: coinsToAdd } })
 		}
+
+		// Decrement 200 coins from each user who didn't place any bet
+		await User.updateMany(
+			{
+				name: { $in: usersWithoutBets.map((user) => user.name) },
+				coins: { $gt: 0 },
+			},
+			{
+				$inc: { coins: -200 },
+			}
+		)
 		res.status(201).json({ message: 'Ставка закрыта' })
 	} catch (e) {
 		console.log('e', e)

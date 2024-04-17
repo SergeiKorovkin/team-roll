@@ -10,6 +10,8 @@ export interface IUseAuth {
 	updateUser: (userData: IUser) => void
 	data: IData | null
 	isAuthenticated: boolean
+	startRoll: boolean
+	setStartRoll: any
 }
 
 interface IData {
@@ -29,7 +31,7 @@ export const useAuth = (): IUseAuth => {
 	const [token, setToken] = useState('')
 	const [data, setData] = useState<IData | null>(null)
 	const [user, setUser] = useState<any | null>(null)
-
+	const [startRoll, setStartRoll] = useState(false)
 	const login = useCallback((userData: IData) => {
 		setToken(userData.token)
 		setData(userData)
@@ -76,5 +78,5 @@ export const useAuth = (): IUseAuth => {
 
 	const isAuthenticated = !!token
 
-	return { login, user, updateUser, logout, token, data, isAuthenticated }
+	return { login, user, updateUser, logout, token, data, isAuthenticated, startRoll, setStartRoll }
 }

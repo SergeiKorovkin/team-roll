@@ -31,6 +31,13 @@ export const useApiConnector = () => {
 			throw new Error(errorData.message || 'An error occurred')
 		}
 
-		return response.json()
+		const text = await response.text()
+
+		try {
+			return text ? JSON.parse(text) : null
+		} catch (e) {
+			console.error('Failed to parse JSON:', e)
+			return {}
+		}
 	}
 }

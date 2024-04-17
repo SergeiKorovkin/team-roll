@@ -8,11 +8,13 @@ import { useGetHistoryBets } from '../../hooks/api/useGetHistoryBets'
 import { useChangeUserSettings } from '../../hooks/api/useChangeUserSettings'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty'
+import CloseSharpIcon from '@mui/icons-material/CloseSharp'
+import { useDeleteBet } from '../../hooks/api/useDeleteBet'
 const RightSide = () => {
 	const { user } = useAuthContext()
 	const { response: users } = useGetAllUsers()
 	const { response: bets } = useGetHistoryBets()
+	const { deleteBet } = useDeleteBet()
 	const { role } = user
 	const { changePlayInGameHandler } = useChangeUserSettings()
 
@@ -77,9 +79,14 @@ const RightSide = () => {
 							<ListItem
 								key={item._id}
 								secondaryAction={
-									<IconButton edge='end' aria-label='comments'>
+									<IconButton
+										onClick={() => (item.win === null ? deleteBet(item._id) : null)}
+										sx={{ ml: 2 }}
+										edge='end'
+										aria-label='comments'
+									>
 										{item.win === null ? (
-											<HourglassEmptyIcon />
+											<CloseSharpIcon />
 										) : item.win ? (
 											<CheckCircleIcon color='success' />
 										) : (
