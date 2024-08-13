@@ -105,7 +105,7 @@ const OneToTwoBet = () => {
 
 	const playUsers = users?.filter(({ playInGame }: any) => playInGame)
 	const customList = (items: string[]) => (
-		<Paper sx={{ width: 200, height: 230, overflow: 'auto' }}>
+		<Paper sx={{ width: 195, height: 230, overflow: 'auto' }}>
 			<List dense component='div' role='list'>
 				{items.map((name: string) => {
 					return (
@@ -125,7 +125,7 @@ const OneToTwoBet = () => {
 		<Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'start' }}>
 			<Grid container justifyContent='start' alignItems='start'>
 				<Grid>{customList(left)}</Grid>
-				<Grid sx={{ m: 2 }}>
+				<Grid sx={{ m: 1 }}>
 					<Grid container direction='column' alignItems='center'>
 						<Typography sx={{ fontSize: 14 }}>
 							{right.length} / {Math.ceil(activeUsers.length / 2)}
