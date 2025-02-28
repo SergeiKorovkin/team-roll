@@ -10,7 +10,6 @@ services:
     ports:
       - "5001:5001"
     volumes:
-      - /app/node_modules
       - ~/docker-certs:/etc/letsencrypt/live/lmru-returns.ru:ro
     environment:
       - NODE_ENV=production
